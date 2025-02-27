@@ -1,0 +1,16 @@
+# Node.js
+backend/node_modules/
+WEBSCAP/node_modules/
+backend/authentification_ldap.file
+oscap/results/
+npm-debug.log
+yarn-error.log
+
+# Logs
+logs/
+*.log
+
+# Build output
+WEBSCAP/dist/
+WEBSCAP/build/
+
