@@ -15,13 +15,13 @@ It can work on remote system with SSH key.
 
 Support a LDAP like FreeIPA to authenticate users.
 
-![login](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/login.png)
-![detail](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/details.png)
-![detail2](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/details2.png)
-![detail3](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/details3.png)
-![scan](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/scan.png)
-![adduser](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/adduser.png)
-![cvss](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/cvss.png)
+<img src="https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/login.png" width="150">
+<img src="https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/details.png" width="150">
+<img src="https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/details2.png" width="150">
+<img src="https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/details3.png" width="150">
+<img src="https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/scan.png" width="150">
+<img src="https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/adduser.png" width="150">
+<img src="https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/screenshots/cvss.png" width="150">
 
 ### Installation 
 
