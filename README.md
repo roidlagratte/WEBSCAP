@@ -9,13 +9,19 @@ Components :
 
 ## Description
 
-![login](sreenshots/login.png)  
-![detail](sreenshots/details.png)  
-![detail2](sreenshots/details2.png)  
-![detail3](sreenshots/details3.png)  
-![scan](sreenshots/scan.png)  
-![adduser](sreenshots/adduser.png)  
-![cvss](sreenshots/cvss.png)  
+This application use oscap to generate a XML report, parse this report to update data in MariaDB. You can use crontab or ansible to generate reports (oscap/start-scan-vulnerability.sh and oscap/start-scan-conformity.sh can be launch manually or with ansible or crontab to generate report and store in MariaDB).
+
+It can work on remote system with SSH key.
+
+Support a LDAP like FreeIPA to authenticate users.
+
+![login](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/sreenshots/login.png)  
+![detail](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/sreenshots/details.png)  
+![detail2](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/sreenshots/details2.png)  
+![detail3](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/sreenshots/details3.png)  
+![scan](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/sreenshots/scan.png)  
+![adduser](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/sreenshots/adduser.png)  
+![cvss](https://raw.githubusercontent.com/roidlagratte/WEBSCAP/main/sreenshots/cvss.png)  
 
 
 ### Installation 
