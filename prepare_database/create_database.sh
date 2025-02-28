@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Chemin vers le fichier .env
-ENV_FILE="/opt/backend/.env"
+ENV_FILE="/opt/WEBSCAP/backend/.env"
 
 # Vérification de l'existence du fichier .env
 if [ ! -f "$ENV_FILE" ]; then
@@ -43,4 +43,4 @@ else
     exit 1
 fi
 
-mysql -u $DB_USER -p"$DB_PASS" $DB_NAME < database.sql
+mysql -u $DB_USER -p"$DB_PASS" $DB_NAME < /opt/WEBSCAP/prepare_database/database.sql
