@@ -62,25 +62,25 @@ function run_scan {
 
     if [[ "$nom_serveur" == "localhost" || "$nom_serveur" == "localhost.localdomain" ]]; then
         os_version=$(cat /etc/os-release | grep '^VERSION_ID' | cut -d'=' -f2 | cut -d'.' -f1 | tr -d '"')
-        oscap xccdf eval --results "/opt/oscap/results/oscap-xccdf-result-localhost.xml" --profile "$profile" /usr/share/xml/scap/ssg/content/ssg-almalinux"$os_version"-ds.xml
-        result_path="/opt/oscap/results/oscap-xccdf-result-localhost.xml"
+        oscap xccdf eval --results "/opt/WEBSCAP/oscap/results/oscap-xccdf-result-localhost.xml" --profile "$profile" /usr/share/xml/scap/ssg/content/ssg-almalinux"$os_version"-ds.xml
+        result_path="/opt/WEBSCAP/oscap/results/oscap-xccdf-result-localhost.xml"
     else
         os_version=$(get_os_version "$nom_serveur")
         if [ "$os_version" == "8" ]; then
             ssh root@"$nom_serveur" "oscap xccdf eval --results /tmp/oscap-xccdf-result.xml --profile \"$profile\" /usr/share/xml/scap/ssg/content/ssg-almalinux8-ds.xml"
-            scp root@"$nom_serveur":/tmp/oscap-xccdf-result.xml /opt/oscap/results/oscap-xccdf-result-"$nom_serveur".xml
-            result_path="/opt/oscap/results/oscap-xccdf-result-$nom_serveur.xml"
+            scp root@"$nom_serveur":/tmp/oscap-xccdf-result.xml /opt/WEBSCAP/oscap/results/oscap-xccdf-result-"$nom_serveur".xml
+            result_path="/opt/WEBSCAP/oscap/results/oscap-xccdf-result-$nom_serveur.xml"
         elif [ "$os_version" == "9" ]; then
             ssh root@"$nom_serveur" "oscap xccdf eval --results /tmp/oscap-xccdf-result.xml --profile \"$profile\" /usr/share/xml/scap/ssg/content/ssg-almalinux9-ds.xml"
-            scp root@"$nom_serveur":/tmp/oscap-xccdf-result.xml /opt/oscap/results/oscap-xccdf-result-"$nom_serveur".xml
-            result_path="/opt/oscap/results/oscap-xccdf-result-$nom_serveur.xml"
+            scp root@"$nom_serveur":/tmp/oscap-xccdf-result.xml /opt/WEBSCAP/oscap/results/oscap-xccdf-result-"$nom_serveur".xml
+            result_path="/opt/WEBSCAP/oscap/results/oscap-xccdf-result-$nom_serveur.xml"
         else
             echo "Version AlmaLinux inconnue ($os_version)."
             exit 1
         fi
     fi
 
-    python3 /opt/oscap/insert-into-database-conformity.py "$nom_si" "$nom_serveur" "$result_path"
+    python3 /opt/WEBSCAP/oscap/insert-into-database-conformity.py "$nom_si" "$nom_serveur" "$result_path"
 }
 
 # Vérifier si le nom du SI et le serveur sont fournis

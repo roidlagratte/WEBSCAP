@@ -379,7 +379,7 @@ app.get('/execute-runscan', (req, res) => {
 
   // Détermination du script et de la commande en fonction du type de scan
   if (scan_type === 'conformity') {
-    scriptPath = '/opt/oscap/start-scan-conformity.sh';
+    scriptPath = '/opt/WEBSCAP/oscap/start-scan-conformity.sh';
 
     // Construction de la commande pour conformity
     if (interactive_mode === 'yes' && profil) {
@@ -391,7 +391,7 @@ app.get('/execute-runscan', (req, res) => {
     }
 
   } else if (scan_type === 'vulnerability') {
-    scriptPath = '/opt/oscap/start-scan-vulnerability.sh';
+    scriptPath = '/opt/WEBSCAP/oscap/start-scan-vulnerability.sh';
     
     // Construction de la commande pour vulnerability
     command = `${scriptPath} "${nom_si}" "${server}"`;
