@@ -1,0 +1,13 @@
+[Unit]
+Description=Frontend Service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/npm run dev
+WorkingDirectory=/opt/WEBSCAP/WEBSCAP
+User=root
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+

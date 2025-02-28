@@ -1,0 +1,13 @@
+[Unit]
+Description=Backend Service for WEBSCAP
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /opt/WEBSCAP/backend/server.js
+WorkingDirectory=/opt/WEBSCAP/backend
+User=root
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
