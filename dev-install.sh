@@ -163,6 +163,10 @@ fi
 
 }
 
+function post_installation {
+	mkdir /opt/WEBSCAP/oscap/results
+}
+
 function cleanup {
     echo "Cleaning up temporary files..."
 
@@ -186,5 +190,6 @@ function cleanup {
     install_nodejs
     install_oscap
     create_services
+    post_installation
     cleanup
 
