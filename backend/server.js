@@ -31,6 +31,41 @@ const USERS_FILE =  process.env.USERS_FILE;
 app.use(cors());
 app.use(express.json());
 
+
+let almalinuxVersion = null;
+
+function getAlmaLinuxVersion() {
+  return new Promise((resolve, reject) => {
+    fs.readFile('/etc/redhat-release', 'utf8', (err, data) => {
+      if (err) {
+        console.error("Erreur lors de la lecture de la version AlmaLinux:", err);
+        reject(err);
+        return;
+      }
+
+      const versionMatch = data.match(/AlmaLinux\srelease\s(\d+)/);
+      if (!versionMatch) {
+        console.error("Impossible AlmaLinux");
+        reject(new Error("Version AlmaLinux unknown"));
+        return;
+      }
+
+      resolve(versionMatch[1]);
+    });
+  });
+}
+
+getAlmaLinuxVersion()
+  .then(version => {
+    almalinuxVersion = version;
+    console.log(`AlmaLinux is: ${almalinuxVersion}`);
+  })
+  .catch(err => {
+    console.error("Error get version AlmaLinux:", err.message);
+    process.exit(1); 
+});
+
+
 function sha512(password) {
   return crypto.createHash('sha512').update(password).digest('base64');
 }
@@ -305,7 +340,8 @@ app.get('/api/aggregated-evaluation', (req, res) => {
 });
 
 app.get('/api/oscap-profiles', (req, res) => {
-  exec('/usr/bin/oscap info --fetch-remote-resources /usr/share/xml/scap/ssg/content/ssg-almalinux9-ds.xml', (err, stdout, stderr) => {
+  const command = `/usr/bin/oscap info --fetch-remote-resources /usr/share/xml/scap/ssg/content/ssg-almalinux${almalinuxVersion}-xccdf.xml`;
+  exec(command, (err, stdout, stderr) => {
     if (err) {
       console.error("Erreur lors de l'exécution de la commande oscap info:", err);
       return res.status(500).json({ error: "Erreur lors de l'exécution de la commande oscap info" });
