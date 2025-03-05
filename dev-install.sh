@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+
 function install_oscap {
 if ! rpm -q scap-security-guide; then
         dnf install -y openscap scap-security-guide openscap-utils openscap-scanner
@@ -7,11 +7,12 @@ fi
 }
 
 function install_python_and_modules {
-if ! rpm -q python39; then
-        dnf install -y python39
-	pip3.9 install mysql-connector-python lxml dotenv
-        echo "Mode hors ligne: telecharger :  pip3.9 download mysql-connector-python lxml"
-        echo "Installer manuellement  pip3.9 install lxml-5.3.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl mysql_connector_python-9.2.0-py2.py3-none-any.whl"
+PYTHON_VERSION="3.12"
+if ! rpm -q python${PYTHON_VERSION}; then
+        dnf install -y python${PYTHON_VERSION}  python${PYTHON_VERSION}-pip
+	pip${PYTHON_VERSION} install mysql-connector-python lxml dotenv
+        echo "Mode hors ligne: telecharger :  pip${PYTHON_VERSION} download mysql-connector-python lxml"
+        echo "Installer manuellement  pip${PYTHON_VERSION} install lxml-5.3.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl mysql_connector_python-9.2.0-py2.py3-none-any.whl"
 fi
 }
 
@@ -165,6 +166,9 @@ fi
 
 function post_installation {
 	mkdir /opt/WEBSCAP/oscap/results
+	echo "create a SSH key to connect without password as root on server. push key on all managed servers with ssh-copy-id root@<SERVER>"
+	ssh-keygen -t rsa -b 4096
+        ssh-copy-id root@127.0.0.1
 }
 
 function cleanup {
