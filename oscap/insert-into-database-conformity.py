@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 import mysql.connector
 from lxml import etree
 from datetime import datetime
@@ -12,12 +14,19 @@ nom_si = sys.argv[1]
 nom_serveur = sys.argv[2]
 file_path = sys.argv[3]
 
+# Load database values from .env
+load_dotenv('/opt/WEBSCAP/backend/.env')
+db_host = os.getenv('DB_HOST')
+db_user = os.getenv('DB_USER')
+db_pass = os.getenv('DB_PASS')
+db_name = os.getenv('DB_NAME')
+
 # Connexion à la base de données MySQL
 db_connection = mysql.connector.connect(
-    host="localhost",
-    user="oscap",  # Remplacez par votre utilisateur MySQL
-    password="oscap",  # Remplacez par votre mot de passe MySQL
-    database="oscap"  # Remplacez par le nom de votre base de données
+            host=db_host,
+            user=db_user,
+            password=db_pass,
+            database=db_name
 )
 
 cursor = db_connection.cursor()

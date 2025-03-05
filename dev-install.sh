@@ -9,7 +9,7 @@ fi
 function install_python_and_modules {
 if ! rpm -q python39; then
         dnf install -y python39
-	pip3.9 install mysql-connector-python lxml
+	pip3.9 install mysql-connector-python lxml dotenv
         echo "Mode hors ligne: telecharger :  pip3.9 download mysql-connector-python lxml"
         echo "Installer manuellement  pip3.9 install lxml-5.3.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl mysql_connector_python-9.2.0-py2.py3-none-any.whl"
 fi

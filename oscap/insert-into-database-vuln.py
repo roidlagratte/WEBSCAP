@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 import sys
 import xml.etree.ElementTree as ET
 import re
@@ -13,16 +15,22 @@ nom_si = sys.argv[1]
 nom_serveur = sys.argv[2]
 xml_file = sys.argv[3] 
 
+# Load database values from .env
+load_dotenv('/opt/WEBSCAP/backend/.env')
+db_host = os.getenv('DB_HOST')
+db_user = os.getenv('DB_USER')
+db_pass = os.getenv('DB_PASS')
+db_name = os.getenv('DB_NAME')
 
 
 def analyze_xml_and_patch(xml_file):
     try:
 
         conn = mysql.connector.connect(
-            host='localhost',  # Remplacez par votre hôte
-            user='oscap',  # Remplacez par votre utilisateur
-            password='oscap',  # Remplacez par votre mot de passe
-            database='oscap'  # Remplacez par le nom de votre base
+            host=db_host,
+            user=db_user,
+            password=db_pass,
+            database=db_name
         )
         cursor = conn.cursor()
         # Charger et analyser le fichier XML
