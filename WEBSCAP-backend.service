@@ -3,7 +3,7 @@ Description=Backend Service for WEBSCAP
 After=network.target
 
 [Service]
-ExecStart=/opt/WEBSCAP/start-backend.sh
+ExecStart=node /opt/WEBSCAP/backend/server.js
 WorkingDirectory=/opt/WEBSCAP/backend
 User=root
 Restart=always
