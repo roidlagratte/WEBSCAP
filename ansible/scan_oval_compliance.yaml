@@ -1,0 +1,28 @@
+- name: Exécuter un scan OpenSCAP et récupérer les résultats
+  hosts: all
+  become: yes
+  vars:
+    profile: "{{ profile }}"
+    os_version: "{{ os_version }}"
+  tasks:
+    - name: Exécuter le scan OpenSCAP
+      command: >
+        oscap xccdf eval
+        --fetch-remote-resources
+        --results /tmp/oscap-xccdf-result.xml
+        --profile "{{ profile }}"
+        /usr/share/xml/scap/ssg/content/ssg-almalinux{{ os_version }}-ds.xml
+      register: oscap_result
+      ignore_errors: yes
+
+    - name: Récupérer le fichier de résultats
+      fetch:
+        src: /tmp/oscap-xccdf-result.xml
+        dest: "/opt/WEBSCAP/oscap/results/oscap-xccdf-result-{{ inventory_hostname }}.xml"
+        flat: yes
+
+    - name: Supprimer le fichier temporaire sur le serveur distant
+      file:
+        path: /tmp/oscap-xccdf-result.xml
+        state: absent
+
