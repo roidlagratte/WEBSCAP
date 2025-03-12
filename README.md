@@ -25,7 +25,9 @@ Support a LDAP like FreeIPA to authenticate users.
 
 ### Installation 
 
-1. Clone project
+-- download dev-install.sh script, chmod u+x and execute it as root. it will automatically :
+
+1. Clone the project
 
 2. Change configuration in /opt/backend/.env
 
