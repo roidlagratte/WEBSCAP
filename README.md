@@ -25,7 +25,7 @@ Support a LDAP like FreeIPA to authenticate users.
 
 ### Installation 
 
--- download dev-install.sh script, chmod u+x and execute it as root. it will automatically :
+Download dev-install.sh script, chmod u+x and execute it as root. it will automatically :
 
 1. Clone the project
 
@@ -36,9 +36,9 @@ Support a LDAP like FreeIPA to authenticate users.
 dnf install python3-pip
 pip install mysql-connector-python lxml
 
+4. Install Mariadb
 
-i5. Install Mariadb
-4. Install NODEJS
+5. Install NODEJS
 cd /opt/backend
 npm init -y
 npm install express
@@ -68,3 +68,14 @@ npm install crypto-js axios react-chartjs-2 chart.js
 npm install lucide-react
 
 
+After installation all services are started and ready : 
+check witch 
+systemctl status WEBSCAP-backend
+systemctl status WEBSCAP
+
+Open on a browser https://<SERVEUR>:3000
+Default login : admin/admin
+
+launch manual scan to populate servers and SYSTEM on database witch :
+/opt/WEBSCAP/oscap/start-scan-conformity.sh SYSTEM servername  --interactive-mode=no 
+/opt/WEBSCAP/oscap/start-scan-vulnerability.sh  SYSTEM servername2
