@@ -339,8 +339,66 @@ app.get('/api/aggregated-evaluation', (req, res) => {
   });
 });
 
+
+
+app.get('/api/workaround_print', (req, res) => {
+  const { id } = req.query;
+  console.log(`workaround request ${id}`);
+
+  const query = `SELECT workaround FROM vulnerability WHERE id = ?`;
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      console.error("Erreur lors de l'exécution de la requête SQL:", err);
+      return res.status(500).json({ error: err.message });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Aucun workaround trouvé pour cet ID" });
+    }
+
+    const workarounds = results.map(row => row.workaround);
+    res.json(workarounds);
+  });
+});
+
+app.post('/api/workaround_update', (req, res) => {
+  const { id, remarks, patch } = req.body;
+  console.log(`workaround for ${id} et ${remarks} et ${patch}`);
+
+  if (!id || !remarks || !patch) {
+    return res.status(400).json({ success: false, message: "Données manquantes" });
+  }
+
+  const query = `
+    UPDATE vulnerability
+    SET patch = ?, workaround = ?
+    WHERE id = ?
+  `;
+
+  db.query(query, [2, remarks, id], (err, result) => {
+    if (err) {
+      console.error("Erreur lors de la mise à jour :", err);
+      return res.status(500).json({ success: false, message: "Erreur serveur" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "ID non trouvé" });
+    }
+
+    res.json({ success: true, message: "Mise à jour réussie" });
+  });
+});
+
+
+
 app.get('/api/oscap-profiles', (req, res) => {
-  const command = `/usr/bin/oscap info --fetch-remote-resources /usr/share/xml/scap/ssg/content/ssg-almalinux${almalinuxVersion}-xccdf.xml`;
+  let command;
+  if ( almalinuxVersion == '8' ) {
+      command = `/usr/bin/oscap info --fetch-remote-resources /usr/share/xml/scap/ssg/content/ssg-almalinux${almalinuxVersion}-xccdf.xml`;
+  } else {
+      command = `/usr/bin/oscap info --fetch-remote-resources /usr/share/xml/scap/ssg/content/ssg-almalinux${almalinuxVersion}-ds.xml`;
+  }
+
   exec(command, (err, stdout, stderr) => {
     if (err) {
       console.error("Erreur lors de l'exécution de la commande oscap info:", err);

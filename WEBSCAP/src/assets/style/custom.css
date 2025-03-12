@@ -175,3 +175,24 @@ th button {
   @apply bg-gray-800 text-white px-2 py-1 rounded;
 }
 
+.transition-opacity {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+
+.invisible {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.visible {
+  visibility: visible;
+  pointer-events: all;
+}

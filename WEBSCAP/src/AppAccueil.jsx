@@ -7,7 +7,9 @@ import axios from "axios";
 function AppAccueil() {
   const [servers, setServers] = useState([]);
   const [sis, setSis] = useState([]); // Liste des SI disponibles
-  const [selectedSi, setSelectedSi] = useState(""); // SI sélectionné
+  const [selectedSi, setSelectedSi] = useState(() => {
+    return localStorage.getItem('selectedSi') || "";
+  });
   const [isLoading, setIsLoading] = useState(false); // Gestion du chargement des serveurs
   const [sortConfig, setSortConfig] = useState({
     key: "serveur", // tri par défaut par nom de serveur
@@ -44,12 +46,25 @@ function AppAccueil() {
     fetchSis(); // Charger les SI au montage du composant
   }, []);
 
-  // Recharger les serveurs lorsque le SI sélectionné change
+  useEffect(() => {
+    localStorage.setItem('selectedSi', selectedSi);
+  }, [selectedSi]);
+
   useEffect(() => {
     if (selectedSi) {
+      // Appel initial pour charger les données immédiatement
       fetchServers(selectedSi);
+
+      // Configurer un intervalle pour rafraîchir les données toutes les 10 secondes
+      const intervalId = setInterval(() => {
+        fetchServers(selectedSi);
+      }, 10000); // 10000 ms = 10 secondes
+
+      // Nettoyer l'intervalle lors du démontage ou si `selectedSi` change
+      return () => clearInterval(intervalId);
     }
   }, [selectedSi]);
+
 
   const handleSort = (key) => {
     let direction = "ascending";
@@ -81,7 +96,7 @@ function AppAccueil() {
       <main className="main-content">
         <section className="flex-grow">
           <h2 className="title-header">
-          compliance and vulnerability
+            compliance and vulnerability
           </h2>
 
           {/* Sélection du SI */}
@@ -123,10 +138,10 @@ function AppAccueil() {
                           Date (compliance test)
                         </th>
                         <th className="px-4 py-2 cursor-pointer w-[220px]" onClick={() => handleSort("vulnerabilites")}>
-                        Date (vulnerability test)
+                          Date (vulnerability test)
                         </th>
-                        <th className="px-4 py-2 w-[160px]">Compliance level</th>
-                        <th className="px-4 py-2 w-[160px]">Vulnerability found</th>
+                        <th className="px-4 py-2 w-[180px]">Compliance level</th>
+                        <th className="px-4 py-2 w-[140px]">Vulnerability found</th>
                       </tr>
                     </thead>
                     <tbody>

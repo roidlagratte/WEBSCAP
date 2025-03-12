@@ -73,6 +73,7 @@ CREATE TABLE `vulnerability` (
   `description` text DEFAULT NULL,
   `reference` text DEFAULT NULL,
   `patch` BOOLEAN DEFAULT NULL,
+  `workaround` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `eval` (`eval`),
   CONSTRAINT `vulnerability_ibfk_1` FOREIGN KEY (`eval`) REFERENCES `evaluation` (`id`)

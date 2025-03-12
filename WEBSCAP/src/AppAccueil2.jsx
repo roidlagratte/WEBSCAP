@@ -94,8 +94,8 @@ function AppAccueil2() {
                         <button onClick={() => handleSort('datetest')} className={`px-1 ${sortConfig.key === 'datetest' && sortConfig.direction === 'descending' ? 'text-blue-500' : ''}`}>↓</button>
                       </span>
                     </th>
-                    <th className="px-4 py-2 w-[180px]">Compliance test</th>
-                    <th className="px-4 py-2 cursor-pointer w-[200px]" onClick={() => handleSort("serveur")}>
+                    <th className="px-4 py-2 w-[240px]">Compliance test</th>
+                    <th className="px-4 py-2 cursor-pointer w-[180px]" onClick={() => handleSort("serveur")}>
                       System
                     </th>
                     <th className="px-4 py-2 cursor-pointer w-[220px]" onClick={() => handleSort("conformite")}>
@@ -104,7 +104,7 @@ function AppAccueil2() {
                     <th className="px-4 py-2 cursor-pointer w-[220px]" onClick={() => handleSort("vulnerabilites")}>
                       Compliance/Vulnerability
                     </th>
-                    <th className="px-4 py-2 w-[220px]">Historic</th>
+                    <th className="px-4 py-2 w-[140px]">Historic</th>
                   </tr>
                 </thead>
                 <tbody>
