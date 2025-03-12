@@ -27,6 +27,35 @@ Support a LDAP like FreeIPA to authenticate users.
 
 Download dev-install.sh script, chmod u+x and execute it as root. it will automatically :
 
+During script execution your are prompted to configure :
+
+a) the backend : /opt/WEBSCAP/backend/.env
+
+
+PORT=5000   <= Database backend listening
+DB_HOST=localhost
+DB_USER=oscap
+DB_PASS=oscap
+DB_NAME=oscap   <= change password database
+JWT_SECRET="MyBigSecret"
+FILE_ACTIVE="1"
+USERS_FILE="/opt/WEBSCAP/backend/users.txt"  <= local file account
+
+LDAP_URL="ldaps://127.0.0.1:636"
+LDAP_BIND="uid=admin,cn=users,cn=accounts,dc=domain,dc=com"
+LDAP_SEARCH="dc=domain,dc=com"
+LDAP_FILTER="(&(uid=${username})(memberOf=cn=ipausers,cn=groups,cn=accounts,dc=domain,dc=com))"
+LDAP_PASS="<LDAP PASSWORD>"
+LDAP_ACTIVE="0"    <= here to active LDAP connection
+
+
+b) the frontend : /opt/WEBSCAP/WEBSCAP/.env
+VITE_BACKEND_URL=http://192.168.0.124:5000  <= replace with IP backend and port (normally 5000)
+
+
+
+All steps the script is doing : 
+
 1. Clone the project
 
 2. Change configuration in /opt/backend/.env
