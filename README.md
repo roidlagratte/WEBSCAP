@@ -79,3 +79,5 @@ Default login : admin/admin
 launch manual scan to populate servers and SYSTEM on database witch :
 /opt/WEBSCAP/oscap/start-scan-conformity.sh SYSTEM servername  --interactive-mode=no 
 /opt/WEBSCAP/oscap/start-scan-vulnerability.sh  SYSTEM servername2
+
+Be carrefull : Not again tested with selinux.
