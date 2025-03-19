@@ -41,13 +41,18 @@ CREATE TABLE `details` (
 -- Table structure for table `evaluation`
 --
 
-DROP TABLE IF EXISTS `evaluation`;
+DROP TABLE IF EXISTS `aliaserver`;
+CREATE TABLE aliasserver (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `serveur` VARCHAR(255),
+    `alias` VARCHAR(255)
+);
+
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `evaluation` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `serveur` varchar(255) DEFAULT NULL,
-  `alias` varchar(255) DEFAULT NULL,
   `datetest` datetime DEFAULT NULL,
   `profil` varchar(255) DEFAULT NULL,
   `score` decimal(10,2) DEFAULT NULL,

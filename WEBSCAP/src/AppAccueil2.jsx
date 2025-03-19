@@ -8,33 +8,61 @@ function AppAccueil2() {
   const [servers, setServers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortConfig, setSortConfig] = useState({
-    key: 'datetest', // Par défaut, trier par 'datetest'
-    direction: 'descending', // Par défaut, ordre décroissant
+    key: 'datetest',
+    direction: 'descending',
   });
-
-  // Fonction de récupération des serveurs
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  // Récupération des serveurs
   const fetchServers = async () => {
     try {
       setIsLoading(true);
-      // Lire l'URL de base depuis la variable d'environnement
-      const backendUrl = import.meta.env.VITE_BACKEND_URL;  // URL du backend
+      
       const response = await axios.get(`${backendUrl}/api/evaluation`);
-      setServers(response.data);
-      console.log("Réponse reçue:", response.data);
+      let serverData = response.data;
+      console.log("Serveurs reçus:", serverData);
+
+      // Récupérer les alias pour chaque serveur
+      serverData = await fetchAliases(serverData);
+
+      setServers(serverData);
     } catch (error) {
-      console.error("Erreur lors de la récupération des serveurs  :", error);
+      console.error("Erreur lors de la récupération des serveurs :", error);
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Récupération des alias pour chaque serveur
+  const fetchAliases = async (servers) => {
+    try {
+      const aliasPromises = servers.map(server =>
+        axios.get(`${backendUrl}/api/get-alias?serveur=${server.serveur}`)
+          .then(response => {
+            // Vérifier si la réponse contient un tableau et accéder à l'alias
+            const alias = response.data.length > 0 ? response.data[0].alias : "N/A";
+            console.log(`Alias pour ${server.serveur}:`, alias); // Afficher l'alias pour chaque serveur
+            return { ...server, alias }; // Ajouter l'alias au serveur
+          })
+          .catch(error => {
+            console.error(`Erreur récupération alias pour ${server.serveur}:`, error);
+            return { ...server, alias: "N/A" }; // Retourner "N/A" en cas d'erreur
+          })
+      );
+      return Promise.all(aliasPromises); // Attendre la résolution de toutes les promesses
+    } catch (error) {
+      console.error("Erreur lors de la récupération des alias :", error);
+      return servers.map(server => ({ ...server, alias: "N/A" })); // Retourner "N/A" si une erreur générale se produit
+    }
+  };
+  
+  
+
   useEffect(() => {
-    fetchServers(); // Appeler uniquement l'API des serveurs
+    fetchServers();
   }, []);
 
   const handleSort = (key) => {
     let direction = 'ascending';
-    // Inverser la direction si c'est la même clé
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
       direction = 'descending';
     } else if (sortConfig.key === key && sortConfig.direction === 'descending') {
@@ -77,7 +105,7 @@ function AppAccueil2() {
       <main className="main-content">
         <section className="flex-grow">
           <h2 className="title-header">
-            compliance and vulnerability
+            Compliance and Vulnerability
           </h2>
 
           {isLoading ? (

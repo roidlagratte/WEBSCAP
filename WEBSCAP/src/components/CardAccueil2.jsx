@@ -142,7 +142,7 @@ export default function CardAccueil2({ EvaluationData }) {
           <td className="px-4 py-2">
             <Link
               to={entry.type === "conformite" ? "/conformity" : "/vulnerability"}
-              state={{ id: entry.id, serveur: entry.serveur, formattedDate: formatDate(entry.datetest), score: entry.score, profil: entry.profil, nb_vuln: entry.nb_vuln, SI: entry.SI }}
+              state={{ id: entry.id, serveur: entry.serveur, alias, formattedDate: formatDate(entry.datetest), score: entry.score, profil: entry.profil, nb_vuln: entry.nb_vuln, SI: entry.SI }}
             >
               <span className="hover:text-blue-500" style={{ textDecoration: 'underline' }}>
                 {entry.type === "conformite" ? (

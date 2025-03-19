@@ -7,24 +7,23 @@ import axios from "axios";
 function AppAccueil() {
     const [servers, setServers] = useState([]);
     const [sis, setSis] = useState([]); // Liste des SI disponibles
-    const [selectedSi, setSelectedSi] = useState(() => {
-        return localStorage.getItem('selectedSi') || "";
-    });
-    const [isLoading, setIsLoading] = useState(false); // Gestion du chargement des serveurs
-    const [sortConfig, setSortConfig] = useState({
-        key: "serveur", // tri par défaut par nom de serveur
-        direction: "ascending",
-    });
+    const [selectedSi, setSelectedSi] = useState(() => localStorage.getItem('selectedSi') || "");
+    const [isLoading, setIsLoading] = useState(false);
+    const [sortConfig, setSortConfig] = useState({ key: "serveur", direction: "ascending" });
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-    // Fonction de récupération des évaluations agrégées pour un SI donné
     const fetchServers = async (si) => {
         try {
             setIsLoading(true);
             const response = await axios.get(`${backendUrl}/api/aggregated-evaluation?si=${si}`);
-            setServers(response.data);
-            console.log("Réponse agrégée reçue:", response.data);
+            const serverList = response.data;
+            setServers(serverList);
+            console.log("Réponse agrégée reçue:", serverList);
+
+            if (serverList.length > 0) {
+                fetchAliases(serverList); // Récupérer les alias après avoir les serveurs
+            }
         } catch (error) {
             console.error("Erreur lors de la récupération des évaluations agrégées :", error);
         } finally {
@@ -32,18 +31,39 @@ function AppAccueil() {
         }
     };
 
-    // Fonction de récupération des SI disponibles
+    // Fonction pour récupérer les alias
+    const fetchAliases = async (serverList) => {
+        try {
+            const aliasRequests = serverList.map(server =>
+                axios.get(`${backendUrl}/api/get-alias?serveur=${server.serveur}`)
+                    .then(response => ({ serveur: server.serveur, alias: response.data[0]?.alias || "N/A" }))
+                    .catch(() => ({ serveur: server.serveur, alias: "N/A" }))
+            );
+
+            const aliasResults = await Promise.all(aliasRequests);
+
+            setServers(prevServers =>
+                prevServers.map(server => {
+                    const aliasEntry = aliasResults.find(a => a.serveur === server.serveur);
+                    return { ...server, alias: aliasEntry ? aliasEntry.alias : "N/A" };
+                })
+            );
+        } catch (error) {
+            console.error("Erreur lors de la récupération des alias :", error);
+        }
+    };
+
     const fetchSis = async () => {
         try {
             const response = await axios.get(`${backendUrl}/api/stats-get-si`);
-            setSis(response.data); // Charger la liste des SI
+            setSis(response.data);
         } catch (error) {
             console.error("Erreur lors de la récupération des SI :", error);
         }
     };
 
     useEffect(() => {
-        fetchSis(); // Charger les SI au montage du composant
+        fetchSis();
     }, []);
 
     useEffect(() => {
@@ -52,63 +72,33 @@ function AppAccueil() {
 
     useEffect(() => {
         if (selectedSi) {
-            // Appel initial pour charger les données immédiatement
             fetchServers(selectedSi);
-
-            // Configurer un intervalle pour rafraîchir les données toutes les 10 secondes
-            const intervalId = setInterval(() => {
-                fetchServers(selectedSi);
-            }, 3600000); // 60000 ms = 3600 secondes
-
-            // Nettoyer l'intervalle lors du démontage ou si `selectedSi` change
+            const intervalId = setInterval(() => fetchServers(selectedSi), 3600000);
             return () => clearInterval(intervalId);
         }
     }, [selectedSi]);
 
-
     const handleSort = (key) => {
-        let direction = "ascending";
-        if (sortConfig.key === key && sortConfig.direction === "ascending") {
-            direction = "descending";
-        } else if (sortConfig.key === key && sortConfig.direction === "descending") {
-            direction = "ascending";
-        }
+        let direction = sortConfig.key === key && sortConfig.direction === "ascending" ? "descending" : "ascending";
         setSortConfig({ key, direction });
     };
 
     const sortedServers = useMemo(() => {
         return [...servers].sort((a, b) => {
-            if (a[sortConfig.key] === null || a[sortConfig.key] === undefined) return 1;
-            if (b[sortConfig.key] === null || b[sortConfig.key] === undefined) return -1;
-            if (a[sortConfig.key] < b[sortConfig.key]) {
-                return sortConfig.direction === "ascending" ? -1 : 1;
-            }
-            if (a[sortConfig.key] > b[sortConfig.key]) {
-                return sortConfig.direction === "ascending" ? 1 : -1;
-            }
-            return 0;
+            if (!a[sortConfig.key]) return 1;
+            if (!b[sortConfig.key]) return -1;
+            return a[sortConfig.key] < b[sortConfig.key]
+                ? sortConfig.direction === "ascending" ? -1 : 1
+                : sortConfig.direction === "ascending" ? 1 : -1;
         });
     }, [servers, sortConfig]);
-
-    // Fonction pour mettre à jour l'alias d'un serveur
-    const handleAliasUpdate = (serveur, newAlias) => {
-        setServers(prevServers =>
-            prevServers.map(server =>
-                server.serveur === serveur ? { ...server, alias: newAlias } : server
-            )
-        );
-    };
 
     return (
         <div className="flex">
             <Navbar />
             <main className="main-content">
                 <section className="flex-grow">
-                    <h2 className="title-header">
-                        compliance and vulnerability
-                    </h2>
-
-                    {/* Sélection du SI */}
+                    <h2 className="title-header">compliance and vulnerability</h2>
                     <div className="p-4">
                         <div className="mb-4">
                             <label htmlFor="si-select" className="block mb-2 text-sm font-medium text-gray-700">
@@ -120,16 +110,12 @@ function AppAccueil() {
                                 onChange={(e) => setSelectedSi(e.target.value)}
                                 className="block w-full px-3 py-2 border rounded-md shadow-sm focus:ring focus:border-blue-300">
                                 <option value="">-- select system --</option>
-                                {sis.map((si) => (
-                                    <option key={si} value={si}>
-                                        {si}
-                                    </option>
+                                {sis.map(si => (
+                                    <option key={si} value={si}>{si}</option>
                                 ))}
                             </select>
                         </div>
                     </div>
-
-                    {/* Affichage conditionnel */}
                     {selectedSi ? (
                         isLoading ? (
                             <p>Loading data...</p>
@@ -143,7 +129,7 @@ function AppAccueil() {
                                                 <th className="px-4 py-2 cursor-pointer w-[220px]" onClick={() => handleSort("serveur")}>
                                                     Server
                                                 </th>
-                                                <th className="px-4 py-2 cursor-pointer w-[220px]" onClick={() => handleSort("profil")}>
+                                                <th className="px-4 py-2 cursor-pointer w-[220px]" onClick={() => handleSort("alias")}>
                                                     Alias
                                                 </th>
                                                 <th className="px-4 py-2 cursor-pointer w-[220px]" onClick={() => handleSort("conformite")}>
@@ -158,11 +144,7 @@ function AppAccueil() {
                                         </thead>
                                         <tbody>
                                             {sortedServers.map((server) => (
-                                                <CardAccueil
-                                                    key={server.serveur}
-                                                    EvaluationData={server}
-                                                    onAliasUpdate={handleAliasUpdate} // Passe la fonction de mise à jour
-                                                />
+                                                <CardAccueil key={server.serveur} EvaluationData={server} />
                                             ))}
                                         </tbody>
                                     </table>

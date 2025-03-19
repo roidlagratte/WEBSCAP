@@ -233,6 +233,16 @@ app.get('/api/stats-get-si', (req, res) => {
   });
 });
 
+app.get('/api/get-alias', (req, res) => {
+  console.log(`call /api/get-alias`);
+  const { serveur } = req.query;
+  const query = 'SELECT alias FROM aliasserver where serveur = ?';
+  db.query(query, [ serveur], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
+
 // Route pour récupérer les serveurs en fonction du SI
 app.get('/api/stats-get-servers', (req, res) => {
   console.log(`call /api/stats-get-servers`);
@@ -278,7 +288,6 @@ app.get('/api/aggregated-evaluation', (req, res) => {
   const query = `
     SELECT
       s.serveur,
-      COALESCE(s.alias, '') AS alias,
       c.conformite_date AS conformite,
       v.vulnerabilites_date AS vulnerabilites,
       s.SI,
@@ -289,7 +298,7 @@ app.get('/api/aggregated-evaluation', (req, res) => {
       c.profil
     FROM (
       -- Liste distincte des serveurs avec le SI fourni
-      SELECT DISTINCT serveur, SI, alias
+      SELECT DISTINCT serveur, SI
       FROM evaluation
       WHERE SI = ?
     ) AS s
@@ -397,31 +406,56 @@ app.post('/api/workaround_update', (req, res) => {
   });
 });
 
+
 app.post('/api/alias_update', (req, res) => {
   const { alias, serveur } = req.body;
   console.log(`alias is ${alias} for serveur ${serveur}`);
 
-  if (!serveur ||!alias ) {
+  if (!serveur || !alias) {
     return res.status(400).json({ success: false, message: "Données manquantes" });
   }
 
-  const query = `
-    UPDATE evaluation
-    SET alias = ?
-    WHERE serveur = ?
-  `;
+  // Utiliser une requête SQL pour vérifier si le serveur existe déjà
+  const checkServerQuery = `SELECT id FROM aliasserver WHERE serveur = ?`;
 
-  db.query(query, [alias, serveur], (err, result) => {
-    if (err) {
-      console.error("Erreur lors de la mise à jour :", err);
+  db.query(checkServerQuery, [serveur], (checkErr, checkResult) => {
+    if (checkErr) {
+      console.error("Erreur lors de la vérification du serveur :", checkErr);
       return res.status(500).json({ success: false, message: "Erreur serveur" });
     }
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ success: false, message: "ID non trouvé" });
-    }
+    if (checkResult.length > 0) {
+      // Le serveur existe, on met à jour l'alias
+      const updateQuery = `
+        UPDATE aliasserver
+        SET alias = ?
+        WHERE serveur = ?
+      `;
 
-    res.json({ success: true, message: "Mise à jour réussie" });
+      db.query(updateQuery, [alias, serveur], (updateErr, updateResult) => {
+        if (updateErr) {
+          console.error("Erreur lors de la mise à jour :", updateErr);
+          return res.status(500).json({ success: false, message: "Erreur serveur" });
+        }
+
+        res.json({ success: true, message: "Mise à jour réussie" });
+      });
+    } else {
+      // Le serveur n'existe pas, on l'insère
+      const insertQuery = `
+        INSERT INTO aliasserver (serveur, alias)
+        VALUES (?, ?)
+      `;
+
+      db.query(insertQuery, [serveur, alias], (insertErr, insertResult) => {
+        if (insertErr) {
+          console.error("Erreur lors de l'insertion :", insertErr);
+          return res.status(500).json({ success: false, message: "Erreur serveur" });
+        }
+
+        res.json({ success: true, message: "Insertion réussie" });
+      });
+    }
   });
 });
 
