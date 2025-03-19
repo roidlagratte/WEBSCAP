@@ -42,10 +42,11 @@ CREATE TABLE `details` (
 --
 
 DROP TABLE IF EXISTS `aliaserver`;
-CREATE TABLE aliasserver (
+CREATE TABLE `aliasserver` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `serveur` VARCHAR(255),
-    `alias` VARCHAR(255)
+    `alias` VARCHAR(255),
+    PRIMARY KEY (`id`) 
 );
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
