@@ -47,6 +47,7 @@ DROP TABLE IF EXISTS `evaluation`;
 CREATE TABLE `evaluation` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `serveur` varchar(255) DEFAULT NULL,
+  `alias` varchar(255) DEFAULT NULL,
   `datetest` datetime DEFAULT NULL,
   `profil` varchar(255) DEFAULT NULL,
   `score` decimal(10,2) DEFAULT NULL,

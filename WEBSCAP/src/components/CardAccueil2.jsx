@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
+import axios from 'axios'; // Importez axios
 
 export default function CardAccueil2({ EvaluationData }) {
   const [isExpanded, setIsExpanded] = useState(false);
-
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     if (isNaN(date)) return "Date invalide";
@@ -25,7 +26,7 @@ export default function CardAccueil2({ EvaluationData }) {
     return Math.floor(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  const { id, serveur, datetest, score, type, nb_vuln, profil, SI, olderEntries } = EvaluationData;
+  const { id, serveur, alias, datetest, score, type, nb_vuln, profil, SI, olderEntries } = EvaluationData;
   const formattedDate = formatDate(datetest);
   const daysElapsed = calculateDaysDifference(datetest);
 
@@ -62,7 +63,7 @@ export default function CardAccueil2({ EvaluationData }) {
 
   const VulnerabilityBar = ({ nbVuln }) => {
     let textColor;
-  
+
     if (nbVuln < 5) {
       textColor = 'text-green-500';
     } else if (nbVuln < 20) {
@@ -70,14 +71,14 @@ export default function CardAccueil2({ EvaluationData }) {
     } else {
       textColor = 'text-red-500';
     }
-  
+
     return (
       <div className="w-full h-6 flex items-center justify-center">
         <span className={`${textColor} font-bold text-lg`}>{nbVuln}</span>
       </div>
     );
   };
-  
+
 
 
 
@@ -92,7 +93,7 @@ export default function CardAccueil2({ EvaluationData }) {
         <td className="px-4 py-2">
           <Link
             to={type === "conformite" ? "/conformity" : "/vulnerability"}
-            state={{ id, serveur, formattedDate, score, profil, nb_vuln, SI }}
+            state={{ id, serveur, alias, formattedDate, score, profil, nb_vuln, SI }}
           >
             <span className="text-gray-900 hover:text-blue-500" style={{ textDecoration: 'underline' }}>
               {type === "conformite" ? (
@@ -115,6 +116,7 @@ export default function CardAccueil2({ EvaluationData }) {
 
         <td className="px-4 py-2">{SI}</td>
         <td className="px-4 py-2">{serveur}</td>
+        <td className="px-4 py-2">{alias}</td>
         <td className="px-4 py-2">
           {type === "conformite" ? (
             <ScoreBar score={score} />
@@ -137,7 +139,6 @@ export default function CardAccueil2({ EvaluationData }) {
       {isExpanded && olderEntries && olderEntries.map((entry) => (
         <tr key={entry.id} className="text-center bg-gray-100">
           <td className="px-4 py-2">{formatDate(entry.datetest)}</td>
-
           <td className="px-4 py-2">
             <Link
               to={entry.type === "conformite" ? "/conformity" : "/vulnerability"}
@@ -159,6 +160,7 @@ export default function CardAccueil2({ EvaluationData }) {
           </td>
           <td className="px-4 py-2">{entry.SI}</td>
           <td className="px-4 py-2">{entry.serveur}</td>
+          <td>{entry.alias}</td>
           <td className="px-4 py-2">
             {entry.type === "conformite" ? (
               <ScoreBar score={entry.score} />
@@ -178,6 +180,7 @@ CardAccueil2.propTypes = {
   EvaluationData: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     serveur: PropTypes.string.isRequired,
+    alias: PropTypes.string,
     datetest: PropTypes.string,
     profil: PropTypes.string,
     score: PropTypes.number,

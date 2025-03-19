@@ -170,6 +170,7 @@ const hashPass = (password) => {
 
 // Route pour récupérer les serveurs
 app.get("/api/evaluation", (req, res) => {
+  console.log(`call /api/evaluation`);
   db.query(`
     WITH ranked_evaluations AS (
       SELECT
@@ -194,6 +195,7 @@ app.get("/api/evaluation", (req, res) => {
 
 // Route pour récupérer les détails d'une évaluation spécifique
 app.get("/api/evaluation/:id", (req, res) => {
+  console.log(`call /api/evaluation/:id`);
   const evaluationId = req.params.id;
 
   db.query("SELECT * FROM details WHERE eval = ?", [evaluationId], (err, results) => {
@@ -208,6 +210,7 @@ app.get("/api/evaluation/:id", (req, res) => {
 
 // Route pour récupérer les vulnérabilités
 app.get("/api/vulnerability/:id", (req, res) => {
+  console.log(`call /api/vulnerability/:id`);
   const evaluationId = req.params.id;
 
   db.query("SELECT * FROM vulnerability WHERE eval = ?", [evaluationId], (err, results) => {
@@ -222,6 +225,7 @@ app.get("/api/vulnerability/:id", (req, res) => {
 
 // Route pour récupérer les SI
 app.get('/api/stats-get-si', (req, res) => {
+  console.log(`call /api/stats-get-si`);
   const query = 'SELECT DISTINCT SI FROM evaluation';
   db.query(query, (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -231,6 +235,7 @@ app.get('/api/stats-get-si', (req, res) => {
 
 // Route pour récupérer les serveurs en fonction du SI
 app.get('/api/stats-get-servers', (req, res) => {
+  console.log(`call /api/stats-get-servers`);
   const { si } = req.query;
   if (!si || typeof si !== 'string' || si.length > 30) { // Exemple de validation: 'si' doit être une chaîne de caractères non vide et de longueur maximale 30
   	return res.status(400).json({ error: "Le paramètre 'si' est invalide." });
@@ -244,6 +249,7 @@ app.get('/api/stats-get-servers', (req, res) => {
 
 // Route pour récupérer les données
 app.get('/api/stats-get-data', (req, res) => {
+  console.log(`call /api/stats-get-data`);
   const { SI, serveur } = req.query;
 
   const query = `SELECT datetest, score, type, nb_vuln FROM evaluation WHERE SI=? AND serveur=? ORDER BY datetest ASC`;
@@ -262,6 +268,7 @@ app.get('/api/stats-get-data', (req, res) => {
 // Renvoie une seule ligne par serveur avec la dernière date pour chaque type (conformite et vulnerabilites)
 // Si une des informations est absente pour un serveur, les colonnes correspondantes seront à NULL.
 app.get('/api/aggregated-evaluation', (req, res) => {
+  console.log(`call /api/aggregated-evaluation`);
   const { si } = req.query;
   
   if (!si) {
@@ -271,6 +278,7 @@ app.get('/api/aggregated-evaluation', (req, res) => {
   const query = `
     SELECT
       s.serveur,
+      COALESCE(s.alias, '') AS alias,
       c.conformite_date AS conformite,
       v.vulnerabilites_date AS vulnerabilites,
       s.SI,
@@ -281,7 +289,7 @@ app.get('/api/aggregated-evaluation', (req, res) => {
       c.profil
     FROM (
       -- Liste distincte des serveurs avec le SI fourni
-      SELECT DISTINCT serveur, SI
+      SELECT DISTINCT serveur, SI, alias
       FROM evaluation
       WHERE SI = ?
     ) AS s
@@ -389,7 +397,33 @@ app.post('/api/workaround_update', (req, res) => {
   });
 });
 
+app.post('/api/alias_update', (req, res) => {
+  const { alias, serveur } = req.body;
+  console.log(`alias is ${alias} for serveur ${serveur}`);
 
+  if (!serveur ||!alias ) {
+    return res.status(400).json({ success: false, message: "Données manquantes" });
+  }
+
+  const query = `
+    UPDATE evaluation
+    SET alias = ?
+    WHERE serveur = ?
+  `;
+
+  db.query(query, [alias, serveur], (err, result) => {
+    if (err) {
+      console.error("Erreur lors de la mise à jour :", err);
+      return res.status(500).json({ success: false, message: "Erreur serveur" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "ID non trouvé" });
+    }
+
+    res.json({ success: true, message: "Mise à jour réussie" });
+  });
+});
 
 app.get('/api/oscap-profiles', (req, res) => {
   let command;

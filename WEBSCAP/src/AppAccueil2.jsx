@@ -76,8 +76,8 @@ function AppAccueil2() {
       <Navbar />
       <main className="main-content">
         <section className="flex-grow">
-        <h2 className="title-header">
-          compliance and vulnerability
+          <h2 className="title-header">
+            compliance and vulnerability
           </h2>
 
           {isLoading ? (
@@ -94,15 +94,18 @@ function AppAccueil2() {
                         <button onClick={() => handleSort('datetest')} className={`px-1 ${sortConfig.key === 'datetest' && sortConfig.direction === 'descending' ? 'text-blue-500' : ''}`}>↓</button>
                       </span>
                     </th>
-                    <th className="px-4 py-2 w-[240px]">Compliance test</th>
-                    <th className="px-4 py-2 cursor-pointer w-[180px]" onClick={() => handleSort("serveur")}>
+                    <th className="px-4 py-2 w-[240px]">Type test</th>
+                    <th className="px-4 py-2 cursor-pointer w-[180px]">
                       System
                     </th>
-                    <th className="px-4 py-2 cursor-pointer w-[220px]" onClick={() => handleSort("conformite")}>
+                    <th className="px-4 py-2 cursor-pointer w-[220px]" onClick={() => handleSort("server")}>
                       Server
                     </th>
+                    <th className="px-4 py-2 cursor-pointer w-[180px]" onClick={() => handleSort("alias")}>
+                      Alias
+                    </th>
                     <th className="px-4 py-2 cursor-pointer w-[220px]" onClick={() => handleSort("vulnerabilites")}>
-                      Compliance/Vulnerability
+                      Vulnerability
                     </th>
                     <th className="px-4 py-2 w-[140px]">Historic</th>
                   </tr>

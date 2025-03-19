@@ -11,7 +11,7 @@ function AppConformity() {
   const [filter, setFilter] = useState('all');
   const [sortConfig, setSortConfig] = useState({ key: 'rule', direction: 'ascending' });
   const location = useLocation();
-  const { id, serveur, formattedDate, score, profil } = location.state || {};
+  const { id, serveur, alias, formattedDate, score, profil } = location.state || {};
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL; // Utilisation de la variable d'environnement
 
@@ -96,9 +96,11 @@ function AppConformity() {
     <main className="main-content">
       <Navbar />
       <section className="flex-grow-0">
-      <h2 className="title-header">
+        <h2 className="title-header">
           <div className="flex justify-center">
-            <span className="text-4xl text-center w-full">{serveur}</span>
+            <span className="text-4xl text-center w-full">
+              {alias ? `${serveur} (${alias})` : serveur}
+            </span>
           </div>
           <div className="text-sm mt-2 w-full flex justify-between items-center">
             <span className="text-xl" style={{ width: "30%" }}>Test : {formattedDate}</span>
@@ -125,50 +127,50 @@ function AppConformity() {
                   className="border border-gray-400 px-4 py-2 w-[300px] cursor-pointer"
                   onClick={() => handleSort('rule')}
                 >
-                Evaluation type
-                <span className="ml-2">
-                  {sortConfig.key === 'rule' && (
-                  <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
-                  )}
-                </span>
-              </th>
+                  Evaluation type
+                  <span className="ml-2">
+                    {sortConfig.key === 'rule' && (
+                      <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
+                    )}
+                  </span>
+                </th>
 
-              <th className="border border-gray-400 px-4 py-2 w-[540px] cursor-pointer"
-                onClick={() => handleSort('titre')}
-              >
-                Title
-                <span className="ml-2">
-                  {sortConfig.key === 'titre' && (
-                  <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
-                  )}
-                </span>
-              </th>
+                <th className="border border-gray-400 px-4 py-2 w-[540px] cursor-pointer"
+                  onClick={() => handleSort('titre')}
+                >
+                  Title
+                  <span className="ml-2">
+                    {sortConfig.key === 'titre' && (
+                      <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
+                    )}
+                  </span>
+                </th>
 
-              <th className="border border-gray-400 px-4 py-2 w-[120px] cursor-pointer"
-                onClick={() => handleSort('severity')}
-              >
-                Gravity
-                <span className="ml-2">
-                  {sortConfig.key === 'severity' && (
-                  <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
-                  )}
-                </span>
-              </th>
+                <th className="border border-gray-400 px-4 py-2 w-[120px] cursor-pointer"
+                  onClick={() => handleSort('severity')}
+                >
+                  Gravity
+                  <span className="ml-2">
+                    {sortConfig.key === 'severity' && (
+                      <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
+                    )}
+                  </span>
+                </th>
 
-              <th className="border border-gray-400 px-4 py-2 w-[120px] cursor-pointer"
-                onClick={() => handleSort('test')}
-              >
-                Results
-                <span className="ml-2">
-                  {sortConfig.key === 'test' && (
-                  <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
-                  )}
-                </span>
-              </th>
+                <th className="border border-gray-400 px-4 py-2 w-[120px] cursor-pointer"
+                  onClick={() => handleSort('test')}
+                >
+                  Results
+                  <span className="ml-2">
+                    {sortConfig.key === 'test' && (
+                      <span>{sortConfig.direction === 'ascending' ? '↑' : '↓'}</span>
+                    )}
+                  </span>
+                </th>
 
-              <th className="border border-gray-400 px-4 py-2 w-[120px]">
-                Actions
-              </th>
+                <th className="border border-gray-400 px-4 py-2 w-[120px]">
+                  Actions
+                </th>
 
               </tr>
             </thead>
